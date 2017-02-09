@@ -13,6 +13,7 @@
 #include <string>
 #include "time.h"
 #include <vector>
+#include "MatrixHead.h"
 
 // initialize namespace
 using namespace std;
@@ -21,68 +22,13 @@ ofstream outfile;
 
 void morten_wrfile(string filename, vector<double>& u, vector<double>& x, vector<double>& exact, int n); //write function defined below
 void LUdecomp(int n);
-/*
-void writeoutput (double * u, double * x, int n); //output function defined below
-void urkle(double * u, double * q,int n); //error calculation function defined below
-*/
 void gauss(int n); //backward-forward substitution, ie: gaussian elimination
 void LUdecomp(int n); //solution by LU composition
 
 //function definitions
 //double exact(double x) { return 1.0 - (1 - exp(-10))*x - exp(-10 * x); }
+//funtion 100.0*exp(-10.0*x.at(i))
 
-int main(int argc, const char * argv[]){
-    
-    gauss(11);
-    gauss(101);
-	gauss(1001);
-	// additional gauss functions
-    /*
-    for(int i=0;i<101;i++){
-    int n = (int) (10000.0*pow(10,(double) i/100.0));
-        gauss(n);
-    }
-	*/ 
-	LUdecomp(10);
-    return 0;
-}
-//defining a matrix class that utilizes a few member functions
-// template from (https://isocpp.org/wiki/faq/operator-overloading#matrix-subscript-op)
-class Matrix
-{
-public:
-	Matrix(unsigned row, unsigned col);
-	double& operator() (unsigned row, unsigned col);
-	double operator()(unsigned row, unsigned col) const;
-	//..
-	~Matrix(); // Destructor
-	Matrix(const Matrix& m); // copy constructor
-	Matrix& operator= (const Matrix& m); // Assignment operator
-	// ...
-private:
-	unsigned rows_, cols_;
-	double* data_;
-};
-
-inline
-Matrix::Matrix(unsigned rows, unsigned cols) :rows_(rows), cols_(cols) 
-{
-	data_ = new double[rows * cols];
-}
-inline
-Matrix::~Matrix() {
-	delete[] data_;
-}
-inline
-double& Matrix:: operator()(unsigned row, unsigned col)
-{
-	return data_[cols_*row + col];
-}
-inline
-double Matrix::operator()(unsigned row, unsigned col) const
-{
-	return data_[cols_*row + col];
-}
 void gauss(int n) {
 
    double h = 1.0/(double)n; //step size
@@ -169,56 +115,44 @@ void gauss(int n) {
 	string elements = to_string(n);										//converts the number of elements, n, to a string
 	morten_wrfile(filename, u, x, exact, n);
 	cout << "completed morten writefile " << n << " elements" << endl;
-
-	//empty the arrays to free memory
-	/*
-	delete[] f;
-	cout << "complted deleting f" << endl;
-	delete[] a;
-	cout << "complted deleting a" << endl;
-	delete[] b;
-	cout << "complted deleting b" << endl;
-	delete[] c;
-	cout << "complted deleting c" << endl;
-	delete[] exact;
-	cout << "complted deleting exact" << endl;
-	delete[] u;
-	cout << "complted deleting u" << endl;
-	delete[] x;
-	cout << "complted deleting stuff" << endl;
-	*/
 }
 
 //definition of the LUdecomp function
 void LUdecomp(int n) {
-
+	
 	Matrix mat_A(n, n);
 	Matrix mat_L(n, n);
 	Matrix mat_U(n, n);
-	
-	//filling the tridiagonal elements
-	for (int i = 0; i <= n; i++) {
-		for (int j = 0; j <= n; j++) {
+	vector<double> x(n);
+	vector<double> solution(n);
+	vector<double> f(n);
+	vector<double> analyticSol(n);
+
+	double h = 1.0 / (double)n;
+	double hh = h*h;
+	// filling the matrices with zeros
+	for (int i = 0; i < n; i++) {
+		x.at(i) = i*h;
+		analyticSol.at(i) = 1.0 - (1 - exp(-10))*x.at(i) - exp(-10 * x.at(i));
+		f.at(i) = hh*100.0*exp(-10.0*x.at(i));
+
+		for (int j = 0; j < n; j++) {
 			mat_A(i, j) = mat_L(i, j) = mat_U(i, j) = 0.0;
 		}
 	}
-	for (int i = 0; i <= n; i++) {
-		mat_A(i, i) = 2.0;
-		mat_A(i, i + 1) = -1.0;
+	//filling the tridiagonal elements
+	for (int i = 0; i < n-1; i++) {
+		mat_A(i, i) = 2.0; // center diagonal
+		mat_A(i, i + 1) = -1.0; //right diagonal
 	}
-	for (int i = 1; i <= n; i++) {
+	//left diagonal
+	for (int i = 1; i < n; i++) {
 		mat_A(i, i - 1) = -1.0;
 	}
+	//fill in the last diagonal
+	mat_A(n-1, n-1) = 2.0;
 	// ...
-	cout << mat_A(0, 0) << endl;
-	/*
-	
-	cout << "begin deletion" << endl;
-	mat_A.~Matrix();
-	cout << "delete L" << endl;
-	mat_L.~Matrix();
-	mat_U.~Matrix();
-	*/
+	cout << "Leaving LUdecomp"<< endl;
 }
 
 // writing function using morten's code
@@ -240,51 +174,11 @@ void morten_wrfile(string filename,vector<double>& u, vector<double>& x, vector<
 	outfile.close();
 }
 
-// these are the write-out and error functions made by colin
-/*
-void writeoutput (vector<double>& u, vector<double>& x, int n){
-    
-    std::string filename;
-   
-    if (n==11){
-        filename += "file10.csv";
-    }
-    else if (n==101){
-            filename += "file100.csv";
-        }
-    else if (n==1001){
-            filename += "file1000.csv";
-        }
-    else{
-        return;
-    }
-    
-    std::ofstream myfile;
-    myfile.open(filename);
-    for (int i=0; i<n+1; i++){
-        myfile << x.at(i) << "," << u[i] << std::endl;
-    }
-    myfile.close();
-    }   
-void urkle(vector<double>& u, vector<double>& q,int n){ //error function
-    
-    double e = std::abs((q[1]-u[1])/q[1]);
-    
-    for (int i=2; i<n; i++){
-        double g=std::abs((q[i]-u[i])/q[i]);
-        if(g>e){
-            e=g;
-        }
-    }
-    //std::cout << "result at step "<< n << " " << " max error is " u[l] << std::endl
-    std::string filename = "error.csv";
-    
-    std::ofstream myfile;
-    myfile.open(filename,std::ofstream::out | std::ofstream::app);
-    myfile << -log10((double) n) << "," << log10(e) << std::endl;
-    
-    
-    myfile.close();
-}
-*/
+int main(int argc, const char * argv[]) {
+	gauss(11);
+	gauss(101);
+	gauss(1001);
 
+	LUdecomp(2);
+	return 0;
+}
