@@ -151,7 +151,41 @@ void LUdecomp(int n) {
 	}
 	//fill in the last diagonal
 	mat_A(n-1, n-1) = 2.0;
-	// ...
+	
+    for (int i=0; i<n; i++) {
+        mat_U(0,i)=mat_A(0,i);
+        mat_L(i,0)=mat_A(i,0)/mat_U(1,1);
+    }
+    
+    for(int j=1;j<n;j++){
+        for(int i=1;i<n;i++){
+         
+            if(i>j) {
+                for(int p=0;p<j;p++){
+                    double s+=mat_L(i,p)*Mat_U(p,j);
+                }
+                mat_L(i,j)=(mat_A(i,j)-s)/Mat_U(j,j);
+            }
+            
+            else if (i==j){
+                for(int p=0;p<i;p++){
+                    double g+=mat_L(i,p)*mat_U(p,j);
+                }
+                mat_U(i,j)=mat_A(i,j)-g;
+            
+            }
+            else{
+                for(int q=0; q<i;q++){
+                    double h+=mat_L(i,q)*mat_U(q,j);
+                }
+                mat_U(i,j)=mat_A-h;
+            
+            }
+            
+        }
+    }
+    
+    // ...
 	cout << "Leaving LUdecomp"<< endl;
 }
 
