@@ -20,11 +20,11 @@ using namespace std;
 ofstream outfile;
 
 void morten_wrfile(string filename, vector<double>& u, vector<double>& x, vector<double>& exact, int n); //write function defined below
-
-//void writeoutput (double * u, double * x, int n); //output function defined below
-
-//void urkle(double * u, double * q,int n); //error calculation function defined below
-
+void LUdecomp(int n);
+/*
+void writeoutput (double * u, double * x, int n); //output function defined below
+void urkle(double * u, double * q,int n); //error calculation function defined below
+*/
 void gauss(int n); //backward-forward substitution, ie: gaussian elimination
 void LUdecomp(int n); //solution by LU composition
 
@@ -36,7 +36,7 @@ int main(int argc, const char * argv[]){
     gauss(11);
     gauss(101);
 	gauss(1001);
-	// additional gauss functions 
+	// additional gauss functions
     /*
     for(int i=0;i<101;i++){
     int n = (int) (10000.0*pow(10,(double) i/100.0));
@@ -57,18 +57,16 @@ public:
 	//..
 	~Matrix(); // Destructor
 	Matrix(const Matrix& m); // copy constructor
-	Matrix& operator() = (const Matrix& m); // Assignment operator
+	Matrix& operator= (const Matrix& m); // Assignment operator
 	// ...
 private:
 	unsigned rows_, cols_;
 	double* data_;
 };
+
 inline
-Matrix::Matrix(unsigned rows, unsigned cols)
-	: rows_(rows)
-	, cols_(cols)
+Matrix::Matrix(unsigned rows, unsigned cols) :rows_(rows), cols_(cols) 
 {
-	;
 	data_ = new double[rows * cols];
 }
 inline
@@ -190,12 +188,20 @@ void gauss(int n) {
 	cout << "complted deleting stuff" << endl;
 	*/
 }
+
+//definition of the LUdecomp function
 void LUdecomp(int n) {
 
 	Matrix mat_A(n, n);
 	Matrix mat_L(n, n);
 	Matrix mat_U(n, n);
-
+	
+	//filling the tridiagonal elements
+	for (int i = 0; i <= n; i++) {
+		for (int j = 0; j <= n; j++) {
+			mat_A(i, j) = mat_L(i, j) = mat_U(i, j) = 0.0;
+		}
+	}
 	for (int i = 0; i <= n; i++) {
 		mat_A(i, i) = 2.0;
 		mat_A(i, i + 1) = -1.0;
@@ -203,10 +209,16 @@ void LUdecomp(int n) {
 	for (int i = 1; i <= n; i++) {
 		mat_A(i, i - 1) = -1.0;
 	}
+	// ...
+	cout << mat_A(0, 0) << endl;
+	/*
+	
+	cout << "begin deletion" << endl;
 	mat_A.~Matrix();
+	cout << "delete L" << endl;
 	mat_L.~Matrix();
 	mat_U.~Matrix();
-	cout << mat_A(2, 2) << endl;
+	*/
 }
 
 // writing function using morten's code
