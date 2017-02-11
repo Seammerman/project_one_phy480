@@ -154,13 +154,14 @@ void LUdecomp(int n) {
 	
     for (int i=0; i<n; i++) {
         mat_U(0,i)=mat_A(0,i);
-        mat_L(i,0)=mat_A(i,0)/mat_U(1,1);
+        mat_L(i,0)=mat_A(i,0)/mat_U(0,0);
     }
     
     for(int j=1;j<n;j++){
         for(int i=1;i<n;i++){
          
             if(i>j) {
+                s=0.0;
                 for(int p=0;p<j;p++){
                     double s+=mat_L(i,p)*Mat_U(p,j);
                 }
@@ -168,6 +169,7 @@ void LUdecomp(int n) {
             }
             
             else if (i==j){
+                g=0.0;
                 for(int p=0;p<i;p++){
                     double g+=mat_L(i,p)*mat_U(p,j);
                 }
@@ -175,6 +177,7 @@ void LUdecomp(int n) {
             
             }
             else{
+                h=0.0;
                 for(int q=0; q<i;q++){
                     double h+=mat_L(i,q)*mat_U(q,j);
                 }
