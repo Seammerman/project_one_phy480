@@ -117,12 +117,41 @@ void gauss(int n) {
 	cout << "completed morten writefile " << n << " elements" << endl;
 }
 
+
+
+//print matricies
+
+void printmatrix(Matrix& amatrix, int n){
+    
+    for(int j=0;j<n;j++){
+        for(int k=0;k<n;k++){
+            cout<<amatrix(j,k) << "  ";
+        
+        }
+        cout<<endl;
+    }
+    cout << endl;
+    
+    
+}
+
+
+
+
+
+
+
+
+
+
 //definition of the LUdecomp function
+
 void LUdecomp(int n) {
 	
 	Matrix mat_A(n, n);
 	Matrix mat_L(n, n);
 	Matrix mat_U(n, n);
+    Matrix mat_LU(n,n);
 	vector<double> x(n);
 	vector<double> solution(n);
 	vector<double> f(n);
@@ -137,7 +166,7 @@ void LUdecomp(int n) {
 		f.at(i) = hh*100.0*exp(-10.0*x.at(i));
 
 		for (int j = 0; j < n; j++) {
-			mat_A(i, j) = mat_L(i, j) = mat_U(i, j) = 0.0;
+			mat_A(i, j) = mat_L(i, j) = mat_U(i, j)= mat_LU(i,j) = 0.0;
 		}
 	}
 	//filling the tridiagonal elements
@@ -156,40 +185,59 @@ void LUdecomp(int n) {
         mat_U(0,i)=mat_A(0,i);
         mat_L(i,0)=mat_A(i,0)/mat_U(0,0);
     }
+    for (int i=1;i<n;i++){
+        mat_L(i,i)=1.0;
+    }
     
     for(int j=1;j<n;j++){
         for(int i=1;i<n;i++){
          
             if(i>j) {
-                s=0.0;
+                double s=0.0;
                 for(int p=0;p<j;p++){
-                    double s+=mat_L(i,p)*Mat_U(p,j);
+                    s+=mat_L(i,p)*mat_U(p,j);
                 }
-                mat_L(i,j)=(mat_A(i,j)-s)/Mat_U(j,j);
+                mat_L(i,j)=(mat_A(i,j)-s)/mat_U(j,j);
             }
             
             else if (i==j){
-                g=0.0;
+                double g=0.0;
                 for(int p=0;p<i;p++){
-                    double g+=mat_L(i,p)*mat_U(p,j);
+                     g+=mat_L(i,p)*mat_U(p,j);
                 }
                 mat_U(i,j)=mat_A(i,j)-g;
             
             }
             else{
-                h=0.0;
+                double h=0.0;
                 for(int q=0; q<i;q++){
-                    double h+=mat_L(i,q)*mat_U(q,j);
+                     h+=mat_L(i,q)*mat_U(q,j);
                 }
-                mat_U(i,j)=mat_A-h;
+                mat_U(i,j)=mat_A(i,j)-h;
             
             }
             
         }
     }
     
-    // ...
-	cout << "Leaving LUdecomp"<< endl;
+    
+    for (int i=0;i<n;i++){
+        for(int j=0;j<n;j++){
+            double s=0.0;
+            for(int k=0;k<n;k++){
+                s+=mat_L(i,k)*mat_U(k,j);
+            }
+            mat_LU(i,j)=s;
+         }
+    }
+    
+    printmatrix(mat_U,n);
+    printmatrix(mat_L,n);
+    printmatrix(mat_A,n);
+    printmatrix(mat_LU,n);
+    
+    //cout << "Leaving LUdecomp"<< endl;
+    
 }
 
 // writing function using morten's code
@@ -212,10 +260,10 @@ void morten_wrfile(string filename,vector<double>& u, vector<double>& x, vector<
 }
 
 int main(int argc, const char * argv[]) {
-	gauss(11);
-	gauss(101);
-	gauss(1001);
+	//gauss(11);
+	//gauss(101);
+	//gauss(1001);
 
-	LUdecomp(2);
+	LUdecomp(10);
 	return 0;
 }
