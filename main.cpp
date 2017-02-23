@@ -152,24 +152,18 @@ void LUdecomp(int n) {
 				mat_L(i, j) = mat_U(i, j)= mat_LU(i,j) = 0.0;
 		}
 	}
-	//cout << "zeros" << endl;
-	//print(mat_A,n);
-	//filling the tridiagonal elements
+	
 
 	// center and right diagonals
 	for (int i = 0; i < (n-1); i++) {
 		mat_A(i,i) = 2.0; // center diagonal
 		mat_A(i, i + 1) = -1.0; //right diagonal
 	}
-	//cout << "right and center diagonal elements" << endl;
-	//print(mat_A,n);
-	//left diagonal
+
 	for (int i = 1; i < n; i++) {
 		mat_A(i, i - 1) = -1.0;
 	}
-	//cout << "left diagonal added" << endl;
-	//print(mat_A,n);
-	//fill in the last diagonal
+
 	mat_A(n-1, n-1) = 2.0;
 	
     for (int i=0; i<n; i++) {
@@ -179,7 +173,6 @@ void LUdecomp(int n) {
     for (int i=1;i<n;i++){
         mat_L(i,i)=1.0;
     }
-    
     for(int j=1;j<n;j++){
         for(int i=1;i<n;i++){
          
@@ -210,8 +203,6 @@ void LUdecomp(int n) {
             
         }
     }
-    
-    
     for (int i=0;i<n;i++){
         for(int j=0;j<n;j++){
             double s=0.0;
@@ -221,34 +212,38 @@ void LUdecomp(int n) {
             mat_LU(i,j)=s;
          }
     }
-	/*
-	cout << "matrix size " + to_string(n) + " x " + to_string(n) << endl;
-	cout << "matix U" << endl;
-    print(mat_U,n);
-	cout << "matrix L" << endl;
-    print(mat_L,n);
-	cout << "matrix A" << endl;
-    print(mat_A,n);
-	cout << "matrix LU" << endl;
-    print(mat_LU,n);
-	
-	cout << mat_A(2,2) << endl;
-    */
-	vector<double> y(n);
-	for (int i = 0; i < n; i++) {
+
+	// Start timing
+	clock_t start, finish;
+	start = clock();
+
+	// begin solution process
+	vector<double> y(n); //defines an intermediate vector
+
+	for (int i = 0; i < n; i++) { //solves for the intermediate vector values
 		for (int j = 0; j < n; j++) {
-			y(i) = f.at(i) - mat_L(i, j)*f.at(j);
+			y.at(i) = f.at(i) - mat_L(i, j)*f.at(j);
 		}
 	}
-	solution.at(n - 1, n - 1) = f.at(n - 1) / mat_U(n - 1, n - 1);
+	// backward reduced row eschelon form
+	solution.at(n - 1) = f.at(n - 1) / mat_U(n - 1, n - 1); //bottom most solution value
 	for (int i = 1; i < n; i++) {
 		solution.at(n - i) = y.at(n - i) / mat_U(n - i, n - i);
-		for (int j = 0; j < n-i-1; n j++) {
+		for (int j = 0; j < n-i-1; j++) {
 			y.at(j) = y.at(j) - mat_U(j,n-i)*solution.at(n-i);
 		}
 	}
-	string filename = "LUdecomp - " + to_string(n) + " -.txt";
+	// finish timing and print time
+	finish = clock();
+	double timeused = (double)(finish - start) / ((double)CLOCKS_PER_SEC);
+	cout << setiosflags(ios::showpoint | ios::uppercase);
+	cout << setprecision(10) << setw(20) << "Time used  for  computation with " << n << " elements =" << timeused << endl;
+	
+	//saving calculations and outputing to file
+	cout << "begin writing to file - " <<  to_string(n) << " - elements" << endl;
+	string filename = "LUdecomp";
 	morten_wrfile(filename, solution, x, analyticSol, n);
+	cout << "finished writing" << endl;
 }
 
 // writing function using morten's code
@@ -272,9 +267,9 @@ void morten_wrfile(string filename,vector<double>& u, vector<double>& x, vector<
 
 int main(int argc, const char * argv[]) {
 	
-	//gauss(11);
-	//gauss(101);
-	//gauss(1001);
+	gauss(11);
+	gauss(101);
+	gauss(1001);
 
 <<<<<<< HEAD
 	LUdecomp(100);
