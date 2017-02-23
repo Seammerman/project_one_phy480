@@ -15,6 +15,7 @@
 #include <vector>
 #include "MatrixHead.h"
 
+
 // initialize namespace
 using namespace std;
 // setup an output file class
@@ -264,6 +265,6 @@ int main(int argc, const char * argv[]) {
 	//gauss(101);
 	//gauss(1001);
 
-	LUdecomp(10);
+	LUdecomp(100);
 	return 0;
 }
