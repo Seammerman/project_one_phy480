@@ -28,8 +28,16 @@ void LUdecomp(int n); //solution by LU composition
 
 //function definitions
 //double exact(double x) { return 1.0 - (1 - exp(-10))*x - exp(-10 * x); }
-//funtion 100.0*exp(-10.0*x.at(i))
-
+//double funtion(double x) { return 100.0*exp(-10.0*x.at(i)); }
+void print(Matrix& mat,int n){
+	
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cout << mat(i, j) << " ";
+		}
+		cout << endl;
+	}
+}
 void gauss(int n) {
 
    double h = 1.0/(double)n; //step size
@@ -118,33 +126,6 @@ void gauss(int n) {
 	cout << "completed morten writefile " << n << " elements" << endl;
 }
 
-
-
-//print matricies
-
-void printmatrix(Matrix& amatrix, int n){
-    
-    for(int j=0;j<n;j++){
-        for(int k=0;k<n;k++){
-            cout<<amatrix(j,k) << "  ";
-        
-        }
-        cout<<endl;
-    }
-    cout << endl;
-    
-    
-}
-
-
-
-
-
-
-
-
-
-
 //definition of the LUdecomp function
 
 void LUdecomp(int n) {
@@ -165,20 +146,29 @@ void LUdecomp(int n) {
 		x.at(i) = i*h;
 		analyticSol.at(i) = 1.0 - (1 - exp(-10))*x.at(i) - exp(-10 * x.at(i));
 		f.at(i) = hh*100.0*exp(-10.0*x.at(i));
-
+		
 		for (int j = 0; j < n; j++) {
-			mat_A(i, j) = mat_L(i, j) = mat_U(i, j)= mat_LU(i,j) = 0.0;
+			mat_A(i, j) = 0.0;
+				mat_L(i, j) = mat_U(i, j)= mat_LU(i,j) = 0.0;
 		}
 	}
+	//cout << "zeros" << endl;
+	//print(mat_A,n);
 	//filling the tridiagonal elements
-	for (int i = 0; i < n-1; i++) {
-		mat_A(i, i) = 2.0; // center diagonal
+
+	// center and right diagonals
+	for (int i = 0; i < (n-1); i++) {
+		mat_A(i,i) = 2.0; // center diagonal
 		mat_A(i, i + 1) = -1.0; //right diagonal
 	}
+	//cout << "right and center diagonal elements" << endl;
+	//print(mat_A,n);
 	//left diagonal
 	for (int i = 1; i < n; i++) {
 		mat_A(i, i - 1) = -1.0;
 	}
+	//cout << "left diagonal added" << endl;
+	//print(mat_A,n);
 	//fill in the last diagonal
 	mat_A(n-1, n-1) = 2.0;
 	
@@ -231,14 +221,34 @@ void LUdecomp(int n) {
             mat_LU(i,j)=s;
          }
     }
-    
-    printmatrix(mat_U,n);
-    printmatrix(mat_L,n);
-    printmatrix(mat_A,n);
-    printmatrix(mat_LU,n);
-    
-    //cout << "Leaving LUdecomp"<< endl;
-    
+	/*
+	cout << "matrix size " + to_string(n) + " x " + to_string(n) << endl;
+	cout << "matix U" << endl;
+    print(mat_U,n);
+	cout << "matrix L" << endl;
+    print(mat_L,n);
+	cout << "matrix A" << endl;
+    print(mat_A,n);
+	cout << "matrix LU" << endl;
+    print(mat_LU,n);
+	
+	cout << mat_A(2,2) << endl;
+    */
+	vector<double> y(n);
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			y(i) = f.at(i) - mat_L(i, j)*f.at(j);
+		}
+	}
+	solution.at(n - 1, n - 1) = f.at(n - 1) / mat_U(n - 1, n - 1);
+	for (int i = 1; i < n; i++) {
+		solution.at(n - i) = y.at(n - i) / mat_U(n - i, n - i);
+		for (int j = 0; j < n-i-1; n j++) {
+			y.at(j) = y.at(j) - mat_U(j,n-i)*solution.at(n-i);
+		}
+	}
+	string filename = "LUdecomp - " + to_string(n) + " -.txt";
+	morten_wrfile(filename, solution, x, analyticSol, n);
 }
 
 // writing function using morten's code
@@ -261,10 +271,18 @@ void morten_wrfile(string filename,vector<double>& u, vector<double>& x, vector<
 }
 
 int main(int argc, const char * argv[]) {
+	
 	//gauss(11);
 	//gauss(101);
 	//gauss(1001);
 
+<<<<<<< HEAD
 	LUdecomp(100);
+=======
+	LUdecomp(10);
+	LUdecomp(100);
+	LUdecomp(1000);
+	
+>>>>>>> origin/master
 	return 0;
 }
