@@ -219,33 +219,45 @@ void LUdecomp(int n) {
 
 	// begin solution process
 	vector<double> y(n); //defines an intermediate vector
-
+	y.at(0) = f.at(0);
+	cout << y.at(0) << " compared to: " << f.at(0) << endl;
 	for (int i = 0; i < n; i++) { //solves for the intermediate vector values
-		for (int j = i+1 ; j < n; j++) {
-			y.at(j) = f.at(j) - mat_L(j, i)*f.at(i);
+		for (int j = 0 ; j < i-1; j++) {
+			y.at(i) = f.at(i) - mat_L(i, j)*f.at(j);
 		}
 	}
 	// backward reduced row eschelon form
-	solution.at(n - 1) = f.at(n - 1) / mat_U(n - 1, n - 1); //bottom most solution value
-	cout << "solution value = "<<solution.at(n - 1) <<", function value = " << f.at(n - 1) << endl;
 	for (int i = 1; i < n; i++) {
-		solution.at(n - i) = y.at(n - i) / mat_U(n - i, n - i);
-		for (int j = 0; j < n-i-1; j++) {
-			y.at(j) = y.at(j) - mat_U(j,n-i)*solution.at(n-i);
+		double temp = 0.0;
+		for (int j = 1; j < n - i; j++) {
+			temp += solution.at(n - j) * mat_U(n - i, n - j);
 		}
+		solution.at(n - i) = 1 / mat_U(n - i, n - i)*(y.at(n - i) - temp);
 	}
+	cout << "Solution       y value       U(n,n)       exact value" << endl;
+	cout << solution.at(n - 1) <<" "<< y.at(n-1) <<" "<< mat_U(n-1,n-1) <<" "<< f.at(n - 1) << endl;
+
+	cout << "matrix: U" << endl;
+	print(mat_U, n);
+	cout << "matrix: L" << endl;
+	print(mat_L, n);
+	cout << "matrix: LU" << endl;
+	print(mat_LU, n);
+	cout << "matrix: A" << endl;
+	print(mat_A, n);
+
 	// finish timing and print time
 	finish = clock();
 	double timeused = (double)(finish - start) / ((double)CLOCKS_PER_SEC);
 	cout << setiosflags(ios::showpoint | ios::uppercase);
 	cout << setprecision(10) << setw(20) << "Time used  for  computation with " << n << " elements =" << timeused << endl;
-	/*
+	
 	//saving calculations and outputing to file
 	cout << "begin writing to file - " <<  to_string(n) << " - elements" << endl;
 	string filename = "LUdecomp";
 	morten_wrfile(filename, solution, x, analyticSol, n);
 	cout << "finished writing" << endl;
-	*/
+	
 }
 
 // writing function using morten's code
@@ -270,9 +282,9 @@ void morten_wrfile(string filename,vector<double>& u, vector<double>& x, vector<
 int main(int argc, const char * argv[]) {
 	
 	gauss(11);
-	gauss(101);
-	gauss(1001);
-	LUdecomp(100);
+	//gauss(101);
+	//gauss(1001);
+	
 	LUdecomp(10);
 	//LUdecomp(100);
 	//LUdecomp(1000);
