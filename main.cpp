@@ -15,6 +15,7 @@
 #include <vector>
 #include "MatrixHead.h"
 
+
 // initialize namespace
 using namespace std;
 // setup an output file class
@@ -220,8 +221,8 @@ void LUdecomp(int n) {
 	vector<double> y(n); //defines an intermediate vector
 
 	for (int i = 0; i < n; i++) { //solves for the intermediate vector values
-		for (int j = 0; j < n; j++) {
-			y.at(i) = f.at(i) - mat_L(i, j)*f.at(j);
+		for (int j = i+1 ; j < n; j++) {
+			y.at(j) = f.at(j) - mat_L(j, i)*f.at(i);
 		}
 	}
 	// backward reduced row eschelon form
@@ -271,7 +272,7 @@ int main(int argc, const char * argv[]) {
 	gauss(11);
 	gauss(101);
 	gauss(1001);
-
+	LUdecomp(100);
 	LUdecomp(10);
 	//LUdecomp(100);
 	//LUdecomp(1000);
