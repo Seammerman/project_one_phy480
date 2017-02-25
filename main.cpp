@@ -140,7 +140,7 @@ void LUdecomp(int n) {
 
 	double h = 1.0 / (double)n;
 	double hh = h*h;
-	// filling the matrices with zeros
+	// initial matrix and vector values
 	for (int i = 0; i < n; i++) {
 		x.at(i) = i*h;
 		analyticSol.at(i) = 1.0 - (1 - exp(-10))*x.at(i) - exp(-10 * x.at(i));
@@ -226,6 +226,7 @@ void LUdecomp(int n) {
 	}
 	// backward reduced row eschelon form
 	solution.at(n - 1) = f.at(n - 1) / mat_U(n - 1, n - 1); //bottom most solution value
+	cout << "solution value = "<<solution.at(n - 1) <<", function value = " << f.at(n - 1) << endl;
 	for (int i = 1; i < n; i++) {
 		solution.at(n - i) = y.at(n - i) / mat_U(n - i, n - i);
 		for (int j = 0; j < n-i-1; j++) {
@@ -237,12 +238,13 @@ void LUdecomp(int n) {
 	double timeused = (double)(finish - start) / ((double)CLOCKS_PER_SEC);
 	cout << setiosflags(ios::showpoint | ios::uppercase);
 	cout << setprecision(10) << setw(20) << "Time used  for  computation with " << n << " elements =" << timeused << endl;
-	
+	/*
 	//saving calculations and outputing to file
 	cout << "begin writing to file - " <<  to_string(n) << " - elements" << endl;
 	string filename = "LUdecomp";
 	morten_wrfile(filename, solution, x, analyticSol, n);
 	cout << "finished writing" << endl;
+	*/
 }
 
 // writing function using morten's code
@@ -271,8 +273,8 @@ int main(int argc, const char * argv[]) {
 	gauss(1001);
 
 	LUdecomp(10);
-	LUdecomp(100);
-	LUdecomp(1000);
+	//LUdecomp(100);
+	//LUdecomp(1000);
 	
 	return 0;
 }
