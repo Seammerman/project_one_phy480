@@ -221,7 +221,7 @@ void LUdecomp(int n) {
 	vector<double> y(n); //defines an intermediate vector
 	y.at(0) = f.at(0);
 	cout << y.at(0) << " compared to: " << f.at(0) << endl;
-	for (int i = 0; i < n; i++) { //solves for the intermediate vector values
+	for (int i = 1; i < n; i++) { //solves for the intermediate vector values
         double temp1=0.0;
         for (int j = 0 ; j < i; j++) {
             temp1+=mat_L(i,j)*y.at(j);
