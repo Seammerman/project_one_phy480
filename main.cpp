@@ -222,9 +222,13 @@ void LUdecomp(int n) {
 	y.at(0) = f.at(0);
 	cout << y.at(0) << " compared to: " << f.at(0) << endl;
 	for (int i = 0; i < n; i++) { //solves for the intermediate vector values
-		for (int j = 0 ; j < i-1; j++) {
-			y.at(i) = f.at(i) - mat_L(i, j)*f.at(j);
-		}
+        double temp1=0.0;
+        for (int j = 0 ; j < i; j++) {
+            temp1+=mat_L(i,j)*y.at(j);
+        }
+        
+       y.at(i) = f.at(i) - temp1;
+		
 	}
 	// backward reduced row eschelon form
 	for (int i = 1; i < n; i++) {
