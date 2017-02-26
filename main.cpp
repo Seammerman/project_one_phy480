@@ -231,9 +231,12 @@ void LUdecomp(int n) {
 		
 	}
 	// backward reduced row eschelon form
-	for (int i = 1; i < n; i++) {
+	
+    solution.at(n-1)=y.at(n-1)/mat_U(n-1,n-1);
+    for (int i = 1; i < n; i++) {
 		double temp = 0.0;
-		for (int j = 1; j < n - i; j++) {
+        
+        for (int j = 1; j < i; j++) {
 			temp += solution.at(n - j) * mat_U(n - i, n - j);
 		}
 		solution.at(n - i) = 1 / mat_U(n - i, n - i)*(y.at(n - i) - temp);
