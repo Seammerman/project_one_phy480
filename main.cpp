@@ -221,6 +221,7 @@ void LUdecomp(int n) {
 	vector<double> y(n); //defines an intermediate vector
 	y.at(0) = f.at(0);
 	cout << y.at(0) << " compared to: " << f.at(0) << endl;
+	
 	for (int i = 1; i < n; i++) { //solves for the intermediate vector values
         double temp1=0.0;
         for (int j = 0 ; j < i; j++) {
@@ -230,20 +231,30 @@ void LUdecomp(int n) {
        y.at(i) = f.at(i) - temp1;
 		
 	}
-	// backward reduced row eschelon form
-	
-    solution.at(n-1)=y.at(n-1)/mat_U(n-1,n-1);
-    for (int i = 1; i < n; i++) {
-		double temp = 0.0;
-        
-        for (int j = 1; j < i; j++) {
-			temp += solution.at(n - j) * mat_U(n - i, n - j);
+	for (int i = 0; i < n; i++) {
+		y.at(i) = y.at(i) / mat_U(i, i);
+	}
+	for (int i = 2; i < n ; i++) {
+		for (int j = 1; j < i; j++) {
+			mat_U(n-i, n-j) = mat_U(n-i, n-j) / mat_U(n-i, n-i);
 		}
-		solution.at(n - i) = 1 / mat_U(n - i, n - i)*(y.at(n - i) - temp);
+	}
+	// backward reduced row eschelon form
+	for (int q = 2; q<n; q++){
+		double temp = 0.0;
+		// backward substitution will put A into reduced row eschelon form
+		for (int j = 1; j < q; j++) {
+			temp += mat_U(n - q, n - j)*y.at(n - q + 1) / mat_U(n - q + 1, n - q + 1);
+			
+		}
+		y.at(n - q) = y.at(n - q) - temp;
+	}
+	for (int l = 1; l<n; l++){
+		solution.at(l) = y.at(l);
 	}
 	cout << "Solution       y value       U(n,n)       exact value" << endl;
 	cout << solution.at(n - 1) <<" "<< y.at(n-1) <<" "<< mat_U(n-1,n-1) <<" "<< f.at(n - 1) << endl;
-
+	/*
 	cout << "matrix: U" << endl;
 	print(mat_U, n);
 	cout << "matrix: L" << endl;
@@ -252,7 +263,7 @@ void LUdecomp(int n) {
 	print(mat_LU, n);
 	cout << "matrix: A" << endl;
 	print(mat_A, n);
-
+	*/
 	// finish timing and print time
 	finish = clock();
 	double timeused = (double)(finish - start) / ((double)CLOCKS_PER_SEC);
@@ -293,8 +304,8 @@ int main(int argc, const char * argv[]) {
 	//gauss(1001);
 	
 	LUdecomp(10);
-	//LUdecomp(100);
-	//LUdecomp(1000);
+	LUdecomp(100);
+	LUdecomp(1000);
 	
 	return 0;
 }
