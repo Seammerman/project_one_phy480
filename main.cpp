@@ -231,7 +231,22 @@ void LUdecomp(int n) {
        y.at(i) = f.at(i) - temp1;
 		
 	}
-	for (int i = 0; i < n; i++) {
+	//new algorithm
+    solution.at(n-1)=y.at(n-1)/mat_U(n-1,n-1);
+    double temp2=0.0;
+    for(int i=1;i<n+1;i++){
+        temp2=0.0;
+        for(int j=1;j<i;j++){
+            temp2+=mat_U(n-i,n-j)*solution.at(n-j);
+        }
+        solution.at(n-i)=(y.at(n-i)-temp2)/mat_U(n-i,n-i);
+    }
+    
+    
+    
+    
+    /*
+    for (int i = 0; i < n; i++) {
 		y.at(i) = y.at(i) / mat_U(i, i);
 	}
 	for (int i = 2; i < n ; i++) {
@@ -252,6 +267,8 @@ void LUdecomp(int n) {
 	for (int l = 1; l<n; l++){
 		solution.at(l) = y.at(l);
 	}
+    
+     */
 	cout << "Solution       y value       U(n,n)       exact value" << endl;
 	cout << solution.at(n - 1) <<" "<< y.at(n-1) <<" "<< mat_U(n-1,n-1) <<" "<< f.at(n - 1) << endl;
 	/*
