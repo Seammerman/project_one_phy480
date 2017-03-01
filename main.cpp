@@ -139,11 +139,11 @@ void LUdecomp(int n) {
 	vector<double> f(n);
 	vector<double> analyticSol(n);
 
-	double h = 1.0 / (double)n;
+	double h = 1.0 / (((double)n)+1);
 	double hh = h*h;
 	// initial matrix and vector values
 	for (int i = 0; i < n; i++) {
-		x.at(i) = i*h;
+		x.at(i) = (i+1)*h;
 		analyticSol.at(i) = 1.0 - (1 - exp(-10))*x.at(i) - exp(-10 * x.at(i));
 		f.at(i) = hh*100.0*exp(-10.0*x.at(i));
 		
@@ -193,9 +193,9 @@ void LUdecomp(int n) {
             
             }
             else{
-                double h=0.0;
+                double gg=0.0;
                 for(int q=0; q<i;q++){
-                     h+=mat_L(i,q)*mat_U(q,j);
+                     gg+=mat_L(i,q)*mat_U(q,j);
                 }
                 mat_U(i,j)=mat_A(i,j)-h;
             

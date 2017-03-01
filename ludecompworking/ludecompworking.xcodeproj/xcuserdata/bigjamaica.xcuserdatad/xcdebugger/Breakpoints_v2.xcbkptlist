@@ -46,9 +46,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "280"
-            endingLineNumber = "280"
-            landmarkName = "morten_wrfile(string filename,vector&lt;double&gt;&amp; u, vector&lt;double&gt;&amp; x, vector&lt;double&gt;&amp; exact,int n)"
-            landmarkType = "9">
+            endingLineNumber = "280">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -63,7 +61,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "276"
             endingLineNumber = "276"
-            landmarkName = "morten_wrfile(string filename,vector&lt;double&gt;&amp; u, vector&lt;double&gt;&amp; x, vector&lt;double&gt;&amp; exact,int n)"
+            landmarkName = "LUdecomp(int n)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
