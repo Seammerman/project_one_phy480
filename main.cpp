@@ -300,8 +300,8 @@ void morten_wrfile(string filename,vector<double>& u, vector<double>& x, vector<
 int main(int argc, const char * argv[]) {
 	
 	gauss(11);
-	//gauss(101);
-	//gauss(1001);
+	gauss(101);
+	gauss(1001);
 	
 	LUdecomp(10);
 	LUdecomp(100);
