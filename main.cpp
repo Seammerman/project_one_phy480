@@ -234,7 +234,7 @@ void LUdecomp(int n) {
 	//new algorithm
     solution.at(n-1)=y.at(n-1)/mat_U(n-1,n-1);
     double temp2=0.0;
-    for(int i=1;i<n+1;i++){
+    for(int i=2;i<n+1;i++){
         temp2=0.0;
         for(int j=1;j<i;j++){
             temp2+=mat_U(n-i,n-j)*solution.at(n-j);
