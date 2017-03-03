@@ -197,7 +197,7 @@ void LUdecomp(int n) {
                 for(int q=0; q<i;q++){
                      gg+=mat_L(i,q)*mat_U(q,j);
                 }
-                mat_U(i,j)=mat_A(i,j)-h;
+                mat_U(i,j)=mat_A(i,j)-gg;
             
             }
             
