@@ -17,12 +17,12 @@ except:
     print ("Usage of this script", sys.argv[0], "infile", sys.argv[1], "Exponent", sys.argv[2]); sys.exit(1)
 
 # Define command line text string 
-# cmdline  = './project1.x '+filename +' ' + str(exponent)
+cmdline  = 'main.exe'
 # Now run code, here c++ code  which has been compiled and linked
-# cmd = cmdline
-# failure = os.system(cmd)
-# if failure:
-#    print ('running project1 failed'); sys.exit(1)
+cmd = cmdline
+failure = os.system(cmd)
+if failure:
+   print ('running project1 failed'); sys.exit(1)
 
 # Start making figures looping over all exponents
 i = j = 0;
@@ -33,7 +33,6 @@ for i in np.arange(0,np.size(matrix_size)):
             fout = filename[j]+str(matrix_size[i]+1)
         else:
             fout = filename[j]+str(matrix_size[i])
-        print(i,j)
         figfile = fout+".pdf"
         data = np.loadtxt(fout)
         x = data[:,0]
