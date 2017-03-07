@@ -299,11 +299,11 @@ void LUdecomp(int n) {
 void morten_wrfile(string filename,vector<double>& u, vector<double>& x, vector<double>& exact,int n) {
 	vector<double> solution = u; //brings in our solution from u
 	string elements = to_string(n); //converts the number of elements to a string
-	string fileout = filename + "_n=_" + elements + ".txt"; //builds a filename as "filename_n=_elements.txt"
+	string fileout = filename + elements; //builds a filename as "filename_n=_elements.txt"
 
 	outfile.open(fileout); // opens the file of interest
 	outfile << setiosflags(ios::showpoint | ios::uppercase);
-	outfile << "       x:             approx:          exact:       relative error" << endl; //table heading: labels columns
+	//outfile << "       x:             approx:          exact:       relative error" << endl; //table heading: labels columns
 	for (int i = 1; i < n; i++) {
 		double RelativeError = fabs((exact.at(i) - solution.at(i)) / exact.at(i));
 		outfile << setw(15) << setprecision(8) << x.at(i);
