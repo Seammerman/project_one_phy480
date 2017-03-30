@@ -21,7 +21,7 @@ using namespace std;
 // setup an output file class
 ofstream outfile;
 
-void morten_wrfile(string filename, vector<double>& u, vector<double>& x, vector<double>& exact, int n); //write function defined below
+void morten_wrfile(string filename, vector<double>& u, vector<double>& x, vector<double>& exact, int n, int count, double timeused); //write function defined below
 void LUdecomp(int n);
 void gauss(int n); //backward-forward substitution, ie: gaussian elimination
 void LUdecomp(int n); //solution by LU composition
@@ -40,20 +40,8 @@ void print(Matrix& mat,int n){
 }
 void gauss(int n) {
 
+	cout << "Begin Guassian Elimination of " << n << " x " << n << " Matrix" << endl;
    double h = 1.0/(double)n; //step size
-   /*
-   double *f = new double[n]; //function
-   double *b = new double[n]; //diagonal
-   double *a = new double[n-1]; //upper
-   double *c = new double[n-1]; //lower
-   double *u = new double[n+1]; // numerical solution
-   double *exact = new double[n];  // exact solution
-   double *x = new double[n+1]; //x axis
-    u[0]=0.0;
-    u[n]=0.0;
-    x[0]=0.0;
-    x[n]=1.0;
-	*/
 
    vector<double> f(n);
    vector<double> b(n);
@@ -63,6 +51,8 @@ void gauss(int n) {
    vector<double> exact(n);
    vector<double> x(n+1);
   
+   int count = 0;
+
    u.at(0) = 0.0;
    u.at(n) = 0.0;
    x.at(0) = 0.0;
@@ -86,6 +76,7 @@ void gauss(int n) {
         a.at(j)= -1.0; //upper
         
         c.at(j) = -1.0; //lower
+		
     }
     for (int i=2; i<n; i++) //foward substitution
     {
@@ -93,43 +84,42 @@ void gauss(int n) {
         b.at(i)=b.at(i)-a.at(i-1)*c.at(i-1)/b.at(i-1);
         
         f.at(i)=f.at(i)-f.at(i-1)*c.at(i-1)/b.at(i-1);
+
+		count += 6;
     }
     for (int q=2; q<n; q++) //backward substitution
     {
 		// backward substitution will put A into reduced row eschelon form
         f.at(n-q)=f.at(n-q)-a.at(n-q)*f.at(n-q+1)/b.at(n-q+1);
+		count += 3;
     }
     for (int l=1; l<n; l++)
     {
         u.at(l)= f.at(l)/b.at(l);
-       
+        
+		count += 1;
         //std::cout << "result at step "<< l << " " << u[l] << "  "<< "error "<< (q[l]-u[l])/q[l] << std::endl;
     }
 	// finish timing and print time
 	finish = clock();
 	double timeused = (double)(finish - start) / ((double)CLOCKS_PER_SEC);
-	cout << setiosflags(ios::showpoint | ios::uppercase);
-	cout << setprecision(10) << setw(20) << "Time used  for  computation with " << n << " elements =" << timeused << endl;
-
-	//begin data output
-	/*
-    writeoutput(u,x,n); //output function made by colin
-	cout << "writeoutput" << endl;
-    urkle(u,exact,n); //error output function made by colin
-	cout << "urkle" << endl;
-	*/
+	//cout << "Guassian Elimination with FLOPS: " << count << endl;
+	//cout << setiosflags(ios::showpoint | ios::uppercase);
+	//cout << setprecision(10) << setw(20) << "Time used  for  computation: "<< timeused << endl;
 
 	//data output by spencer
 	string filename = "Guassian";										//declares a filename fitting the solution method
 	string elements = to_string(n);										//converts the number of elements, n, to a string
-	morten_wrfile(filename, u, x, exact, n);
-	cout << "completed morten writefile " << n << " elements" << endl;
+	morten_wrfile(filename, u, x, exact, n, count, timeused);
+	cout << "File output complete " << endl;
 }
 
 //definition of the LUdecomp function
 
 void LUdecomp(int n) {
 	
+	cout << "Begin LU decomp with " << n << " x " << n << " Matrix" << endl;
+
 	Matrix mat_A(n, n);
 	Matrix mat_L(n, n);
 	Matrix mat_U(n, n);
@@ -138,6 +128,8 @@ void LUdecomp(int n) {
 	vector<double> solution(n);
 	vector<double> f(n);
 	vector<double> analyticSol(n);
+
+	int count = 0;
 
 	double h = 1.0 / (((double)n)+1);
 	double hh = h*h;
@@ -169,6 +161,7 @@ void LUdecomp(int n) {
     for (int i=0; i<n; i++) {
         mat_U(0,i)=mat_A(0,i);
         mat_L(i,0)=mat_A(i,0)/mat_U(0,0);
+		count += 1;
     }
     for (int i=1;i<n;i++){
         mat_L(i,i)=1.0;
@@ -180,24 +173,30 @@ void LUdecomp(int n) {
                 double s=0.0;
                 for(int p=0;p<j;p++){
                     s+=mat_L(i,p)*mat_U(p,j);
+					count += 2;
                 }
                 mat_L(i,j)=(mat_A(i,j)-s)/mat_U(j,j);
+				count += 1;
             }
             
             else if (i==j){
                 double g=0.0;
                 for(int p=0;p<i;p++){
                      g+=mat_L(i,p)*mat_U(p,j);
+					 count += 2;
                 }
                 mat_U(i,j)=mat_A(i,j)-g;
+				count += 1;
             
             }
             else{
                 double gg=0.0;
                 for(int q=0; q<i;q++){
                      gg+=mat_L(i,q)*mat_U(q,j);
+					 count += 2;
                 }
                 mat_U(i,j)=mat_A(i,j)-gg;
+				count += 1;
             
             }
             
@@ -208,6 +207,7 @@ void LUdecomp(int n) {
             double s=0.0;
             for(int k=0;k<n;k++){
                 s+=mat_L(i,k)*mat_U(k,j);
+				count += 2;
             }
             mat_LU(i,j)=s;
          }
@@ -220,83 +220,47 @@ void LUdecomp(int n) {
 	// begin solution process
 	vector<double> y(n); //defines an intermediate vector
 	y.at(0) = f.at(0);
-	cout << y.at(0) << " compared to: " << f.at(0) << endl;
 	
 	for (int i = 1; i < n; i++) { //solves for the intermediate vector values
         double temp1=0.0;
         for (int j = 0 ; j < i; j++) {
             temp1+=mat_L(i,j)*y.at(j);
+			count += 2;
         }
         
        y.at(i) = f.at(i) - temp1;
+	   count += 1;
 		
 	}
 	//new algorithm
     solution.at(n-1)=y.at(n-1)/mat_U(n-1,n-1);
+	count += 1;
     double temp2=0.0;
     for(int i=2;i<n+1;i++){
         temp2=0.0;
         for(int j=1;j<i;j++){
             temp2+=mat_U(n-i,n-j)*solution.at(n-j);
+			count += 2;
         }
         solution.at(n-i)=(y.at(n-i)-temp2)/mat_U(n-i,n-i);
+		count += 2;
     }
-    
-    
-    
-    
-    /*
-    for (int i = 0; i < n; i++) {
-		y.at(i) = y.at(i) / mat_U(i, i);
-	}
-	for (int i = 2; i < n ; i++) {
-		for (int j = 1; j < i; j++) {
-			mat_U(n-i, n-j) = mat_U(n-i, n-j) / mat_U(n-i, n-i);
-		}
-	}
-	// backward reduced row eschelon form
-	for (int q = 2; q<n; q++){
-		double temp = 0.0;
-		// backward substitution will put A into reduced row eschelon form
-		for (int j = 1; j < q; j++) {
-			temp += mat_U(n - q, n - j)*y.at(n - q + 1) / mat_U(n - q + 1, n - q + 1);
-			
-		}
-		y.at(n - q) = y.at(n - q) - temp;
-	}
-	for (int l = 1; l<n; l++){
-		solution.at(l) = y.at(l);
-	}
-    
-     */
-	cout << "Solution       y value       U(n,n)       exact value" << endl;
-	cout << solution.at(n - 1) <<" "<< y.at(n-1) <<" "<< mat_U(n-1,n-1) <<" "<< f.at(n - 1) << endl;
-	/*
-	cout << "matrix: U" << endl;
-	print(mat_U, n);
-	cout << "matrix: L" << endl;
-	print(mat_L, n);
-	cout << "matrix: LU" << endl;
-	print(mat_LU, n);
-	cout << "matrix: A" << endl;
-	print(mat_A, n);
-	*/
-	// finish timing and print time
+
 	finish = clock();
 	double timeused = (double)(finish - start) / ((double)CLOCKS_PER_SEC);
-	cout << setiosflags(ios::showpoint | ios::uppercase);
-	cout << setprecision(10) << setw(20) << "Time used  for  computation with " << n << " elements =" << timeused << endl;
+	//cout << "LU decomp with FLOPS: " << count << endl;
+	//cout << setiosflags(ios::showpoint | ios::uppercase);
+	//cout << setprecision(10) << setw(20) << "Time used  for  computation: "<< timeused << endl;
 	
 	//saving calculations and outputing to file
-	cout << "begin writing to file - " <<  to_string(n) << " - elements" << endl;
 	string filename = "LUdecomp";
-	morten_wrfile(filename, solution, x, analyticSol, n);
-	cout << "finished writing" << endl;
+	morten_wrfile(filename, solution, x, analyticSol, n, count, timeused);
+	cout << "Completed File Outpout" << endl;
 	
 }
 
 // writing function using morten's code
-void morten_wrfile(string filename,vector<double>& u, vector<double>& x, vector<double>& exact,int n) {
+void morten_wrfile(string filename,vector<double>& u, vector<double>& x, vector<double>& exact,int n, int count, double timeused) {
 	vector<double> solution = u; //brings in our solution from u
 	string elements = to_string(n); //converts the number of elements to a string
 	string fileout = filename + elements; //builds a filename as "filename_n=_elements.txt"
@@ -309,20 +273,18 @@ void morten_wrfile(string filename,vector<double>& u, vector<double>& x, vector<
 		outfile << setw(15) << setprecision(8) << x.at(i);
 		outfile << setw(15) << setprecision(8) << solution.at(i);
 		outfile << setw(15) << setprecision(8) << exact.at(i);
-		outfile << setw(15) << setprecision(8) << log10(RelativeError) << endl;
+		outfile << setw(15) << setprecision(8) << log10(RelativeError);
+		outfile << setw(15) << setprecision(8) << count;
+		outfile << setw(15) << setprecision(8) << timeused << endl;
 	}
 	outfile.close();
 }
 
 int main(int argc, const char * argv[]) {
 	
-	gauss(11);
-	gauss(101);
-	gauss(1001);
-	
-	LUdecomp(10);
-	LUdecomp(100);
-	LUdecomp(1000);
+	int n = atoi(argv[1]);
+	gauss(n+1);
+	LUdecomp(n);
 	
 	return 0;
 }
